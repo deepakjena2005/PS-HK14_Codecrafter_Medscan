@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedScan AI | Medicine Scanner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 20px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-tabs button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .nav-tabs button.active {
+      background: #0cbbea;
+      color: #1e293b;
+    }
+
+    .nav-tabs button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+.container {
+      padding: 40px 8%;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: rgba(12, 189, 234, 0.95);
+      color: #1e293b;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1e293b;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background-color: #1e3a8a;
+      color: white;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #0f172a;
+      transform: translateY(-2px);
+    }
+
+    #voiceBtn {
+      background: #facc15;
+      color: #0f172a;
+      font-size: 18px;
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #voiceBtn.listening {
+      background: #ef4444;
+      color: white;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      color: #1e293b;
+    }
+
+    .result h3 {
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    .result p {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+
+    .upload-area {
+      border: 2px dashed #1e293b;
+      padding: 30px;
+      text-align: center;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+      color: #1e293b;
+    }
+
+    .upload-area:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .upload-area input {
+      display: none;
+    }
+
+    video {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border: 2px solid #1e293b;
+      border-radius: 10px;
+      margin: 20px auto;
+      display: block;
+      background: #000;
+    }
+
+    img {
+      width: 100%;
+      max-width: 320px;
+      margin-top: 10px;
+      border-radius: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    #medicineInfo {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      color: #1e293b;
+    }
+
+    #medicineInfo h3 {
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    .approved {
+      color: green;
+      font-weight: 600;
+    }
+
+    .rejected {
+      color: red;
+      font-weight: 600;
+    }
+
+    .doctor-card {
+      background: rgba(255, 255, 255, 0.95);
+      color: #1e293b;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid #1e3a8a;
+    }
+
+    .search-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrapper input {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 0;
+    }
+
+    .search-wrapper button {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .container {
+        padding: 20px 4%;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .search-wrapper {
+        flex-direction: column;
+      }
+
+      .search-wrapper input {
+        min-width: 100%;
+      }
+    }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MEDSCAN AI</h1>
+  <div class="nav-tabs">
+    <button class="active" onclick="switchTab('scanner')">Medicine Scanner</button>
+    <button onclick="switchTab('reports')">Medical Reports</button>
+    <button onclick="switchTab('doctor')">Doctor Panel</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="scanner" class="tab-content active">
+    <div class="card">
+      <h2>Search Medicine by Name</h2>
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Enter medicine name">
+        <button onclick="searchMedicine()">Search</button>
+        <button onclick="startVoiceSearch()" id="voiceBtn">🎤</button>
+      </div>
+      <div class="result" id="searchResult"></div>
+    </div>
+    <div class="card">
+      <h2>Scan Medicine Image</h2>
+      <div class="upload-area" onclick="document.getElementById('imageUpload').click()">
+        <p>Click to upload or drag image here</p>
+        <input type="file" id="imageUpload" accept="image/*">
+      </div>
+      <button onclick="scanImage()" style="width: 100%; margin-top: 15px;">Scan Image</button>
+      <div class="result" id="scanResult"></div>
+    </div> 
+    <div class="card">
+      <h2>Scan Medicine with Camera</h2>
+      <button onclick="startCamera()" style="width: 100%; margin-bottom: 15px;">Open Camera</button>
+      <video id="video" autoplay playsinline></video>
+      <button onclick="capturePhoto()" style="width: 100%;">Scan Medicine</button>
+      <canvas id="canvas"></canvas>
+      <img id="photo">
+      <div id="medicineInfo">
+        <h3>Scan Result:</h3>
+        <p id="result">No medicine scanned yet.</p>
+      </div>
+    </div>
+  </div>
+  <div id="reports" class="tab-content">
+    <div class="card">
+      <h2>📋 Medical Report Analysis</h2>
+      <input type="text" id="name" placeholder="Patient Name" />
+      <textarea id="report" placeholder="Paste medical report here"></textarea>
+      <button onclick="generate()" style="width: 100%;">Generate AI Explanation</button>
+      <div id="result"></div>
+    </div>
+  </div>
+  <div id="doctor" class="tab-content">
+    <div class="card">
+      <h2>👨‍⚕️ Doctor Verification Panel</h2>
+      <button onclick="loadReports()" style="width: 100%; margin-bottom: 20px;">Load Reports</button>
+      <div id="doctorPanel"></div>
+    </div>
+  </div>
+</div>
+<script>
+
+const medicineDB = {
+  "paracetamol": {description:"Pain reliever and fever reducer.",uses:"Headache, fever, mild to moderate pain.",dosage:"500-1000mg every 4-6 hours.",schedule:"After food if stomach sensitive; can be taken with or without food.",duration:"3-5 days for fever/pain unless advised.",sideeffects:"Nausea, rash, liver toxicity in overdose.",warnings:"Do not exceed 4000mg/day; caution in liver disease; avoid alcohol.",characteristics:"White 500mg tablet."},
+  "ibuprofen": {description:"NSAID anti-inflammatory.",uses:"Pain, arthritis, inflammation.",dosage:"200-400mg every 6 hours.",schedule:"After meals to reduce stomach irritation.",duration:"3-7 days for pain unless prescribed longer.",sideeffects:"Stomach pain, heartburn, kidney issues, ulcers.",warnings:"Avoid in kidney disease, ulcers, late pregnancy; do not combine with other NSAIDs.",characteristics:"Brown/orange coated tablet."},
+  "amoxicillin": {description:"Penicillin antibiotic.",uses:"Bacterial infections.",dosage:"500mg every 8 hours.",schedule:"Every 8 hours (morning-afternoon-night); with or without food.",duration:"5-10 days as prescribed; complete full course.",sideeffects:"Diarrhea, rash, nausea.",warnings:"Avoid if allergic to penicillin; complete full course.",characteristics:"Pink/white capsule."},
+  "azithromycin": {description:"Macrolide antibiotic.",uses:"Respiratory infections.",dosage:"500mg daily.",schedule:"Once daily, 1 hour before or 2 hours after food.",duration:"3-5 days as prescribed.",sideeffects:"Nausea, diarrhea, abdominal pain.",warnings:"May affect heart rhythm; avoid with certain cardiac drugs.",characteristics:"Oval white tablet."},
+  "ciprofloxacin": {description:"Fluoroquinolone antibiotic.",uses:"UTI infections.",dosage:"250-750mg twice daily.",schedule:"Every 12 hours; avoid dairy/antacids 2 hours before/after.",duration:"5-14 days as prescribed.",sideeffects:"Nausea, tendon pain, dizziness.",warnings:"Risk of tendon rupture; avoid in pregnancy unless prescribed.",characteristics:"White tablet."},
+  "metformin": {description:"Antidiabetic medicine.",uses:"Type 2 diabetes.",dosage:"500-1000mg twice daily.",schedule:"With meals (morning and evening).",duration:"Long-term as prescribed.",sideeffects:"Diarrhea, nausea, B12 deficiency.",warnings:"Avoid in severe kidney disease; stop before contrast studies.",characteristics:"Round white tablet."},
+  "atorvastatin": {description:"Cholesterol-lowering statin.",uses:"High cholesterol.",dosage:"10-80mg daily.",schedule:"Once daily, preferably at night; with or without food.",duration:"Long-term therapy.",sideeffects:"Muscle pain, liver enzyme elevation.",warnings:"Avoid in active liver disease; report muscle pain.",characteristics:"Small white tablet."},
+  "amlodipine": {description:"Calcium channel blocker.",uses:"High blood pressure.",dosage:"5-10mg daily.",schedule:"Once daily, same time each day.",duration:"Long-term therapy.",sideeffects:"Ankle swelling, headache, flushing.",warnings:"Do not stop abruptly without advice.",characteristics:"Small tablet."},
+  "losartan": {description:"ARB antihypertensive.",uses:"Hypertension.",dosage:"50-100mg daily.",schedule:"Once daily, same time each day.",duration:"Long-term therapy.",sideeffects:"Dizziness, high potassium.",warnings:"Avoid in pregnancy; monitor kidney function.",characteristics:"Oval tablet."},
+  "omeprazole": {description:"Proton pump inhibitor.",uses:"GERD, acid reflux.",dosage:"20-40mg daily.",schedule:"30 minutes before breakfast.",duration:"2-8 weeks or as prescribed.",sideeffects:"Headache, diarrhea, B12 deficiency long-term.",warnings:"Long-term use may increase fracture risk.",characteristics:"Capsule form."},
+  "aspirin": {description:"NSAID.",uses:"Pain, heart protection.",dosage:"75-325mg.",schedule:"After food.",duration:"As prescribed.",sideeffects:"Gastric irritation, bleeding.",warnings:"Avoid in ulcers; caution in children (Reye's syndrome).",characteristics:"White tablet."},
+  "dexamethasone": {description:"Corticosteroid.",uses:"Severe inflammation.",dosage:"As prescribed.",schedule:"Usually once daily with food.",duration:"As directed by doctor.",sideeffects:"Insomnia, high blood sugar.",warnings:"Requires medical supervision.",characteristics:"Tablet."},
+
+"warfarin": {description:"Blood thinner.",uses:"Prevent blood clots.",dosage:"As prescribed.",schedule:"Once daily same time (evening preferred).",duration:"Long-term as advised.",sideeffects:"Bleeding, bruising.",warnings:"Regular INR monitoring required; avoid sudden diet changes.",characteristics:"Small colored tablet."},
+
+"clopidogrel": {description:"Antiplatelet.",uses:"Heart protection.",dosage:"75mg daily.",schedule:"Once daily with or without food.",duration:"Long-term as prescribed.",sideeffects:"Bleeding, bruising.",warnings:"Do not stop without doctor advice.",characteristics:"Tablet."},
+
+"aspirin": {description:"NSAID.",uses:"Pain, heart protection.",dosage:"75-325mg.",schedule:"After food.",duration:"As prescribed.",sideeffects:"Gastric irritation, bleeding.",warnings:"Avoid in ulcers; caution in children (Reye’s syndrome).",characteristics:"White tablet."},
+
+"heparin": {description:"Anticoagulant injection.",uses:"Blood clots.",dosage:"As prescribed.",schedule:"Administered by healthcare professional.",duration:"Short-term hospital use.",sideeffects:"Bleeding, low platelets.",warnings:"Monitor clotting parameters.",characteristics:"Injection."},
+
+"metoprolol": {description:"Beta blocker.",uses:"Hypertension.",dosage:"25-100mg daily.",schedule:"Once or twice daily with food.",duration:"Long-term.",sideeffects:"Bradycardia, fatigue.",warnings:"Do not stop abruptly.",characteristics:"Tablet."},
+
+"propranolol": {description:"Beta blocker.",uses:"Anxiety, BP.",dosage:"40mg daily.",schedule:"Before meals.",duration:"As prescribed.",sideeffects:"Fatigue, slow pulse.",warnings:"Avoid in asthma.",characteristics:"Tablet."},
+
+"atenolol": {description:"Beta blocker.",uses:"Hypertension.",dosage:"50mg daily.",schedule:"Once daily same time.",duration:"Long-term.",sideeffects:"Cold extremities, fatigue.",warnings:"Do not stop suddenly.",characteristics:"Tablet."},
+
+"carvedilol": {description:"Heart medicine.",uses:"Heart failure.",dosage:"As prescribed.",schedule:"With food, twice daily.",duration:"Long-term.",sideeffects:"Dizziness, low BP.",warnings:"Dose titration required.",characteristics:"Tablet."},
+
+"furosemide": {description:"Diuretic.",uses:"Fluid retention.",dosage:"20-80mg daily.",schedule:"Morning to avoid nighttime urination.",duration:"As prescribed.",sideeffects:"Dehydration, low potassium.",warnings:"Monitor electrolytes.",characteristics:"Tablet."},
+
+"spironolactone": {description:"Potassium-sparing diuretic.",uses:"Edema.",dosage:"25-100mg daily.",schedule:"Morning with food.",duration:"As prescribed.",sideeffects:"High potassium, breast tenderness.",warnings:"Avoid potassium supplements unless advised.",characteristics:"Tablet."},
+
+"levothyroxine": {description:"Thyroid hormone.",uses:"Hypothyroidism.",dosage:"25-150mcg daily.",schedule:"Early morning empty stomach; 30-60 min before food.",duration:"Long-term lifelong therapy.",sideeffects:"Palpitations if overdosed.",warnings:"Avoid taking with calcium/iron within 4 hours.",characteristics:"Small tablet."},
+
+"insulin": {description:"Hormone injection.",uses:"Diabetes.",dosage:"As prescribed.",schedule:"Before meals or as directed depending on type.",duration:"Lifelong or as advised.",sideeffects:"Low blood sugar, weight gain.",warnings:"Monitor blood glucose regularly.",characteristics:"Injection pen."},
+
+"doxycycline": {description:"Antibiotic.",uses:"Bacterial infections.",dosage:"100mg twice daily.",schedule:"After food with full glass of water; avoid lying down 30 min.",duration:"7-14 days.",sideeffects:"Photosensitivity, nausea.",warnings:"Avoid in pregnancy and children under 8.",characteristics:"Capsule."},
+
+"clarithromycin": {description:"Antibiotic.",uses:"Respiratory infection.",dosage:"500mg twice daily.",schedule:"Every 12 hours with or without food.",duration:"7-14 days.",sideeffects:"Taste disturbance, nausea.",warnings:"May interact with statins.",characteristics:"Tablet."},
+
+"ceftriaxone": {description:"Cephalosporin antibiotic.",uses:"Severe infections.",dosage:"Injection.",schedule:"Given once or twice daily by healthcare provider.",duration:"As prescribed (usually 5-14 days).",sideeffects:"Injection site pain, diarrhea.",warnings:"Administered under medical supervision.",characteristics:"Injection vial."}
+
+
+};
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function searchMedicine() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const resultDiv = document.getElementById("searchResult");
+  if (medicineDB[input]) {
+    const med = medicineDB[input];
+    resultDiv.innerHTML = `<h3>${input.toUpperCase()}</h3><p><strong>Description:</strong> ${med.description}</p><p><strong>Uses:</strong> ${med.uses}</p><p><strong>Dosage:</strong> ${med.dosage}</p><p><strong>Schedule:</strong> ${med.schedule}</p><p><strong>Duration:</strong> ${med.duration}</p><p><strong>Side Effects:</strong> ${med.sideeffects}</p><p><strong>Warnings:</strong> ${med.warnings}</p><p><strong>Characteristics:</strong> ${med.characteristics}</p>`;
+  } else {
+    resultDiv.innerHTML = "<p style='color:red;'><strong>Medicine not found.</strong> Please check the spelling.</p>";
+  }
+}
+
+function scanImage() {
+  const fileInput = document.getElementById("imageUpload");
+  const resultDiv = document.getElementById("scanResult");
+  if (fileInput.files.length === 0) {
+    resultDiv.innerHTML = "<p style='color:red;'>Please upload an image.</p>";
+    return;
+  }
+  const simulatedResult = "paracetamol";
+  const med = medicineDB[simulatedResult];
+  resultDiv.innerHTML = `<h3>${simulatedResult.toUpperCase()}</h3><p><strong>Description:</strong> ${med.description}</p><p><strong>Uses:</strong> ${med.uses}</p><p><strong>Dosage:</strong> ${med.dosage}</p><p><strong>Schedule:</strong> ${med.schedule}</p><p><strong>Duration:</strong> ${med.duration}</p><p><strong>Side Effects:</strong> ${med.sideeffects}</p><p><strong>Warnings:</strong> ${med.warnings}</p><p><strong>Characteristics:</strong> ${med.characteristics}</p>`;
+}
+
+function startCamera() {
+  const video = document.getElementById("video");
+  navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    video.srcObject = stream;
+  }).catch(error => {
+    alert("Camera access denied or error occurred");
+  });
+}
+
+function capturePhoto() {
+  const canvas = document.getElementById("canvas");
+  const video = document.getElementById("video");
+  const photo = document.getElementById("photo");
+  const context = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0);
+  photo.src = canvas.toDataURL("image/png");
+  scanMedicine();
+}
+
+function scanMedicine() {
+  const result = document.getElementById("result");
+  const simulatedResult = "paracetamol";
+  const med = medicineDB[simulatedResult];
+  result.innerHTML = `<h3>${simulatedResult.toUpperCase()}</h3><p><strong>Description:</strong> ${med.description}</p><p><strong>Uses:</strong> ${med.uses}</p><p><strong>Dosage:</strong> ${med.dosage}</p>`;
+}
+
+function startVoiceSearch() {
+  if (!('webkitSpeechRecognition' in window)) {
+    alert("Voice recognition not supported in this browser");
+    return;
+  }
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  const voiceBtn = document.getElementById("voiceBtn");
+  voiceBtn.classList.add("listening");
+  recognition.start();
+  recognition.onresult = function(event) {
+    let transcript = event.results[0][0].transcript;
+    transcript = transcript.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+    transcript = transcript.trim().toLowerCase();
+    document.getElementById("searchInput").value = transcript;
+    searchMedicine();
+  };
+  recognition.onerror = function() {
+    alert("Voice recognition error");
+  };
+  recognition.onend = function() {
+    voiceBtn.classList.remove("listening");
+  };
+}
+
+async function generate() {
+  const patientName = document.getElementById("name").value;
+  const reportText = document.getElementById("report").value;
+  if (!patientName || !reportText) {
+    alert("Please fill in all fields");
+    return;
+  }
+  try {
+    const res = await fetch("/generate", {
+      method: "POST",
+    });
+    const data = await res.json();
+    document.getElementById("result").innerHTML = `<h3>AI Explanation</h3><p><strong>Patient:</strong> ${patientName}</p><p><strong>Analysis:</strong> ${data.aiExplanation}</p><p><strong>Status:</strong> ${data.status}</p>`;
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
+
+async function loadReports() {
+  try {
+    if (reports.length === 0) {
+      document.getElementById("doctorPanel").innerHTML = "<p>No reports yet.</p>";
+      return;
+    }
+    let html = "";
+    reports.forEach(r => {
+      html += `<div class="doctor-card"><p><strong>Patient:</strong> ${r.patientName}</p><p><strong>AI Explanation:</strong> ${r.aiExplanation}</p><p><strong>Status:</strong> <span class="${r.status === 'Approved' ? 'approved' : r.status === 'Rejected' ? 'rejected' : ''}">${r.status}</span></p><button onclick="verify(${r.id}, 'Approved')">✓ Approve</button><button onclick="verify(${r.id}, 'Rejected')">✗ Reject</button></div>`;
+    });
+    document.getElementById("doctorPanel").innerHTML = html;
+  } catch (err) {
+    alert("Error loading reports: " + err.message);
+  }
+}
+
+async function verify(id, status) {
+  try {
+    await fetch(`/verify/${id}`, {
+      method: "POST",
+    });
+    loadReports();
+  } catch (err) {
+    alert("Error updating report: " + err.message);
+  }
+}
+function searchMedicine() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const resultDiv = document.getElementById("searchResult");
+
+  if (medicineDB[input]) {
+    const med = medicineDB[input];
+    resultDiv.innerHTML =`
+     
+      <p><strong>Description:</strong> ${med.description}</p>
+      <p><strong>Uses:</strong> ${med.uses}</p>
+      <p><strong>Dosage:</strong> ${med.dosage}</p>
+       <p><strong>schedule:</strong> ${med.schedule}</p>
+        <p><strong>duration:</strong> ${med.duration}</p>
+         <p><strong>sideeffects:</strong> ${med.sideeffects}</p>
+          <p><strong>warnings:</strong> ${med.warnings}</p>
+      <p><strong>Characteristics:</strong> ${med.characteristics}</p>
+      `;
+  } else {
+    resultDiv.innerHTML = "<p style='color:red;'>Medicine not found.</p>";
+  }
+}
+
+function searchMedicine() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const resultDiv = document.getElementById("searchResult");
+
+  if (medicineDB[input]) {
+    const med = medicineDB[input];
+    resultDiv.innerHTML = `
+     <p><strong>Description:</strong> ${med.description}</p>
+      <p><strong>Uses:</strong> ${med.uses}</p>
+      <p><strong>Dosage:</strong> ${med.dosage}</p>
+       <p><strong>schedule:</strong> ${med.schedule}</p>
+        <p><strong>duration:</strong> ${med.duration}</p>
+         <p><strong>sideeffects:</strong> ${med.sideeffects}</p>
+          <p><strong>warnings:</strong> ${med.warnings}</p>
+      <p><strong>Characteristics:</strong> ${med.characteristics}</p>
+      `;
+  } else {
+    resultDiv.innerHTML = "<p style='color:red;'>Medicine not found.</p>";
+  }
+}
+
+
+function scanImage() {
+  const fileInput = document.getElementById("imageUpload");
+  const resultDiv = document.getElementById("scanResult");
+
+  if (fileInput.files.length === 0) {
+    resultDiv.innerHTML = "<p style='color:red;'>Please upload an image.</p>";
+    return;
+  }
+
+  const simulatedResult = "paracetamol"; 
+
+  const med = medicineDB[simulatedResult];
+
+  resultDiv.innerHTML = `
+        <p><strong>Description:</strong> ${med.description}</p>
+      <p><strong>Uses:</strong> ${med.uses}</p>
+      <p><strong>Dosage:</strong> ${med.dosage}</p>
+       <p><strong>schedule:</strong> ${med.schedule}</p>
+        <p><strong>duration:</strong> ${med.duration}</p>
+         <p><strong>sideeffects:</strong> ${med.sideeffects}</p>
+          <p><strong>warnings:</strong> ${med.warnings}</p>
+      <p><strong>Characteristics:</strong> ${med.characteristics}</p>
+      `;
+}
+ let video = document.getElementById("video");
+let canvas = document.getElementById("canvas");
+let photo = document.getElementById("photo");
+let result = document.getElementById("result");
+        function startCamera() {
+
+            const video = document.getElementById("video");
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    alert("Camera access denied or error occurred");
+                });
+
+        }
+    function capturePhoto() {
+    let context = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0);
+
+    let imageData = canvas.toDataURL("image/png");
+    photo.src = imageData;
+
+
+    scanMedicine(imageData);
+}
+
+function scanMedicine(imageData) {
+
+
+    let random = Math.floor(Math.random() * 3);
+
+    if (random === 0) {
+        result.innerHTML = "<b>Paracetamol</b><br>Used for fever and pain relief.";
+    }
+    else {
+        result.innerHTML = "<br>Invalid image. please scan again";
+    }
+}
+function captureImage() {
+    context.drawImage(video, 0, 0, 300, 250);
+
+  
+    let scannedMedicine = "paracetamol";  
+    let inputMedicine = "paracetamol";    
+
+    if (scannedMedicine === inputMedicine) {
+        result.innerHTML = "✅ Medicine Matched: Paracetamol";
+    } else {
+        result.innerHTML = "❌ Medicine Not Found";
+    }
+}
+function startVoiceSearch(){
+
+if(!('webkitSpeechRecognition' in window)){
+alert("Voice recognition not supported in this browser");
+return;
+}
+
+const recognition = new webkitSpeechRecognition();
+recognition.lang = "en-US";
+recognition.interimResults = false;
+
+const voiceBtn = document.getElementById("voiceBtn");
+voiceBtn.classList.add("listening");
+
+recognition.start();
+
+recognition.onresult = function(event){
+
+let transcript = event.results[0][0].transcript;
+
+
+transcript = transcript.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+
+transcript = transcript.trim().toLowerCase();
+
+document.getElementById("searchInput").value = transcript;
+
+searchMedicine();
+};
+
+recognition.onerror = function(){
+alert("Voice recognition error");
+};
+
+recognition.onend = function(){
+voiceBtn.classList.remove("listening");
+};
+
+}
+</script>
+
+</body>
+</html>
